@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: my_postgres
+    environment:
+      POSTGRES_DB: tivogyll
+      POSTGRES_USER: tivogyll
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    ports:
+      - "5432:5432"
+    networks:
+      - my_network
+
+  myapp:
+    image: myapp-image
+    container_name: my_app
+    environment:
+      - CONNECTION_STRING=${DRONE_SECRET_CONNECTION_STRING}
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+secrets:
+  postgres_password:
+    external: true
